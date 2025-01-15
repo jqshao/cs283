@@ -52,7 +52,11 @@ int main(int argc, char *argv[])
     int user_str_len;   // length of user supplied string
 
     // TODO:  #1. WHY IS THIS SAFE, aka what if argv[1] does not exist?
-    //       PLACE A COMMENT BLOCK HERE EXPLAINING
+    // We first perform a check to see if argc is less than 2. If argc is less than 2,
+    // then that means we have passed in only the program name and no other arguments.
+    // Since C performs short circuit evaluation with "||," we won't need to evaluate
+    // *argv[1] if we already determined no other arguments are getting passed into
+    // the program.
     if ((argc < 2) || (*argv[1] != '-'))
     {
         usage(argv[0]);
@@ -71,7 +75,10 @@ int main(int argc, char *argv[])
     // WE NOW WILL HANDLE THE REQUIRED OPERATIONS
 
     // TODO:  #2 Document the purpose of the if statement below
-    //       PLACE A COMMENT BLOCK HERE EXPLAINING
+    // Our Text Line Processor utility takes the program name, command line operation,
+    // and input string from the user. If we pass less than 3 values into the shell,
+    // we are missing something from the user and will return exit with value 1 to
+    // indicate a command line problem.
     if (argc < 3)
     {
         usage(argv[0]);
