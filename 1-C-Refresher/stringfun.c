@@ -10,7 +10,7 @@ void print_buff(char *, int);
 int setup_buff(char *, char *, int);
 
 // prototypes for functions to handle required functionality
-int count_words(char *, int, int);
+int count_words(char *, int);
 // add additional prototypes here
 int reverse_string(char *, int);
 void print_word(char *, int, int, int, int);
@@ -21,9 +21,15 @@ int setup_buff(char *buff, char *user_str, int len)
     // TODO: #4:  Implement the setup buff as per the directions
     int count = 0;
     int null_terminated = 0;
-    int in_whitespace = 0;
+    int in_whitespace = 1;
     int index = 0;
 
+    // This while loop will iterate through the user string while
+    // its length is less than or equal to the buffer size. If the
+    // user string is null terminated, then we will break out of the
+    // loop. If the character is a space, we will add it to the buffer
+    // if we are not already in whitespace. If the character is not a
+    // space, we will add it to the buffer.
     while (count < len + 1)
     {
         if (*(user_str + index) == '\0')
@@ -49,6 +55,12 @@ int setup_buff(char *buff, char *user_str, int len)
         }
 
         index++;
+    }
+
+    // Remove trailing whitespace
+    if (*(buff + count - 1) == ' ')
+    {
+        count--;
     }
 
     if (!null_terminated)
@@ -79,7 +91,7 @@ void usage(char *exename)
     printf("usage: %s [-h|c|r|w|x] \"string\" [other args]\n", exename);
 }
 
-int count_words(char *buff, int len, int str_len)
+int count_words(char *buff, int str_len)
 {
     int word_count = 0;
     int in_word = 0;
@@ -113,17 +125,15 @@ int reverse_string(char *buff, int str_len)
     return 0;
 }
 
+// This is a helper function that prints out a word and its length
 void print_word(char *buff, int start, int end, int word_count, int word_length)
 {
-    if (word_length > 0)
+    printf("%d. ", word_count);
+    for (int j = start; j < end; j++)
     {
-        printf("%d. ", word_count);
-        for (int j = start; j < end; j++)
-        {
-            putchar(*(buff + j));
-        }
-        printf(" (%d)\n", word_length);
+        putchar(*(buff + j));
     }
+    printf(" (%d)\n", word_length);
 }
 
 int print_words(char *buff, int str_len)
@@ -141,10 +151,7 @@ int print_words(char *buff, int str_len)
         if (*(buff + i) == ' ')
         {
             print_word(buff, i - word_length, i, word_count, word_length);
-            if (word_length > 0)
-            {
-                word_count++;
-            }
+            word_count++;
             word_length = 0;
         }
         else
@@ -161,7 +168,7 @@ int print_words(char *buff, int str_len)
     }
 
     putchar('\n');
-    return 0;
+    return word_count;
 }
 
 // ADD OTHER HELPER FUNCTIONS HERE FOR OTHER REQUIRED PROGRAM OPTIONS
@@ -231,13 +238,14 @@ int main(int argc, char *argv[])
     switch (opt)
     {
     case 'c':
-        rc = count_words(buff, BUFFER_SZ, user_str_len); // you need to implement
+        rc = count_words(buff, user_str_len); // you need to implement
         if (rc < 0)
         {
             printf("Error counting words, rc = %d\n", rc);
             exit(2);
         }
         printf("Word Count: %d\n", rc);
+        print_buff(buff, BUFFER_SZ);
         break;
     case 'r':
         rc = reverse_string(buff, user_str_len);
@@ -254,17 +262,19 @@ int main(int argc, char *argv[])
             printf("Error printing words, rc = %d\n", rc);
             exit(2);
         }
+        printf("Number of words returned: %d\n", rc);
+        print_buff(buff, BUFFER_SZ);
         break;
     case 'x':
         if (argc == 5)
         {
             printf("Not Implemented!\n");
-            exit(2);
+            exit(0);
         }
         else
         {
             printf("You need to provide the 3 required arguments for this option!\n");
-            exit(2);
+            exit(1);
         }
         break;
 
@@ -276,7 +286,6 @@ int main(int argc, char *argv[])
     }
 
     // TODO:  #6 Dont forget to free your buffer before exiting
-    print_buff(buff, BUFFER_SZ);
     free(buff);
     exit(0);
 }
@@ -288,3 +297,11 @@ int main(int argc, char *argv[])
 //           the buff variable will have exactly 50 bytes?
 //
 //           PLACE YOUR ANSWER HERE
+//           Providing both the pointer and the length is a good practice because
+//           it allows the function to check if the buffer is the correct length.
+//           If we only passed in the pointer and someone changed the length of
+//           the buffer in the main function, but forgot to change the length of
+//           the buffer in the function call, then the function would not work.
+//           Passing in the length allows us to be more flexible with the buffer
+//           size and allows us to change the buffer size in the main function
+//           without having to change the function call.
