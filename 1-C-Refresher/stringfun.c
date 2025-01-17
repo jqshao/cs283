@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 #define BUFFER_SZ 50
 
@@ -13,20 +12,23 @@ int setup_buff(char *, char *, int);
 // prototypes for functions to handle required functionality
 int count_words(char *, int, int);
 // add additional prototypes here
+int reverse_string(char *, int);
+void print_word(char *, int, int, int, int);
+int print_words(char *, int);
 
 int setup_buff(char *buff, char *user_str, int len)
 {
     // TODO: #4:  Implement the setup buff as per the directions
     int count = 0;
-    bool null_terminated = false;
-    bool in_whitespace = false;
+    int null_terminated = 0;
+    int in_whitespace = 0;
     int index = 0;
 
     while (count < len + 1)
     {
         if (*(user_str + index) == '\0')
         {
-            null_terminated = true;
+            null_terminated = 1;
             break;
         }
 
@@ -34,14 +36,14 @@ int setup_buff(char *buff, char *user_str, int len)
         {
             if (!in_whitespace)
             {
-                in_whitespace = true;
+                in_whitespace = 1;
                 *(buff + count) = ' ';
                 count++;
             }
         }
         else
         {
-            in_whitespace = false;
+            in_whitespace = 0;
             *(buff + count) = *(user_str + index);
             count++;
         }
@@ -79,7 +81,86 @@ void usage(char *exename)
 
 int count_words(char *buff, int len, int str_len)
 {
-    // YOU MUST IMPLEMENT
+    int word_count = 0;
+    int in_word = 0;
+
+    for (int i = 0; i < str_len; i++)
+    {
+        if (*(buff + i) != ' ' && !in_word)
+        {
+            in_word = 1;
+            word_count++;
+        }
+        else if (*(buff + i) == ' ')
+        {
+            in_word = 0;
+        }
+    }
+
+    return word_count;
+}
+
+int reverse_string(char *buff, int str_len)
+{
+    // Reverse and print out the string
+    printf("Reversed String:  ");
+    for (int i = str_len - 1; i >= 0; i--)
+    {
+        putchar(*(buff + i));
+    }
+    putchar('\n');
+
+    return 0;
+}
+
+void print_word(char *buff, int start, int end, int word_count, int word_length)
+{
+    if (word_length > 0)
+    {
+        printf("%d. ", word_count);
+        for (int j = start; j < end; j++)
+        {
+            putchar(*(buff + j));
+        }
+        printf(" (%d)\n", word_length);
+    }
+}
+
+int print_words(char *buff, int str_len)
+{
+    printf("Word Print\n");
+    printf("----------\n");
+    int word_count = 1;
+    int word_length = 0;
+
+    // The following loop traverses the string and prints out each word
+    // and its length. It checks for spaces to determine when a word has
+    // ended and prints the word and its length when a space is found.
+    for (int i = 0; i < str_len; i++)
+    {
+        if (*(buff + i) == ' ')
+        {
+            print_word(buff, i - word_length, i, word_count, word_length);
+            if (word_length > 0)
+            {
+                word_count++;
+            }
+            word_length = 0;
+        }
+        else
+        {
+            word_length++;
+        }
+
+        // If we are at the end of the string and the last character is not a space,
+        // we print the last word and its length
+        if (i == str_len - 1 && *(buff + i) != ' ')
+        {
+            print_word(buff, i - word_length + 1, i + 1, word_count, word_length);
+        }
+    }
+
+    putchar('\n');
     return 0;
 }
 
@@ -143,7 +224,7 @@ int main(int argc, char *argv[])
     user_str_len = setup_buff(buff, input_string, BUFFER_SZ); // see todos
     if (user_str_len < 0)
     {
-        printf("Error setting up buffer, error = %d", user_str_len);
+        printf("Error setting up buffer, error = %d\n", user_str_len);
         exit(2);
     }
 
@@ -153,10 +234,38 @@ int main(int argc, char *argv[])
         rc = count_words(buff, BUFFER_SZ, user_str_len); // you need to implement
         if (rc < 0)
         {
-            printf("Error counting words, rc = %d", rc);
+            printf("Error counting words, rc = %d\n", rc);
             exit(2);
         }
         printf("Word Count: %d\n", rc);
+        break;
+    case 'r':
+        rc = reverse_string(buff, user_str_len);
+        if (rc < 0)
+        {
+            printf("Error reversing string, rc = %d\n", rc);
+            exit(2);
+        }
+        break;
+    case 'w':
+        rc = print_words(buff, user_str_len);
+        if (rc < 0)
+        {
+            printf("Error printing words, rc = %d\n", rc);
+            exit(2);
+        }
+        break;
+    case 'x':
+        if (argc == 5)
+        {
+            printf("Not Implemented!\n");
+            exit(2);
+        }
+        else
+        {
+            printf("You need to provide the 3 required arguments for this option!\n");
+            exit(2);
+        }
         break;
 
     // TODO:  #5 Implement the other cases for 'r' and 'w' by extending
@@ -168,6 +277,7 @@ int main(int argc, char *argv[])
 
     // TODO:  #6 Dont forget to free your buffer before exiting
     print_buff(buff, BUFFER_SZ);
+    free(buff);
     exit(0);
 }
 
