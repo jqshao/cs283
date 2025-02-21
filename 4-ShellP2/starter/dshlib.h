@@ -1,8 +1,7 @@
 #ifndef __DSHLIB_H__
-    #define __DSHLIB_H__
+#define __DSHLIB_H__
 
-
-//Constants for command structure sizes
+// Constants for command structure sizes
 #define EXE_MAX 64
 #define ARG_MAX 256
 #define CMD_MAX 8
@@ -12,12 +11,12 @@
 
 typedef struct cmd_buff
 {
-    int  argc;
+    int argc;
     char *argv[CMD_ARGV_MAX];
     char *_cmd_buffer;
 } cmd_buff_t;
 
-/* WIP - Move to next assignment 
+/* WIP - Move to next assignment
 #define N_ARG_MAX    15     //MAX number of args for a command
 typedef struct command{
     char exe [EXE_MAX];
@@ -27,33 +26,39 @@ typedef struct command{
 }command_t;
 */
 
-
-//Special character #defines
-#define SPACE_CHAR  ' '
-#define PIPE_CHAR   '|'
+// Special character #defines
+#define SPACE_CHAR ' '
+#define SPACE_STRING " "
+#define PIPE_CHAR '|'
 #define PIPE_STRING "|"
+#define QUOTE_CHAR '"'
 
 #define SH_PROMPT "dsh2> "
 #define EXIT_CMD "exit"
+#define DRAGON_CMD "dragon"
 
-//Standard Return Codes
-#define OK                       0
-#define WARN_NO_CMDS            -1
-#define ERR_TOO_MANY_COMMANDS   -2
+// Standard Return Codes
+#define OK 0
+#define WARN_NO_CMDS -1
+#define ERR_TOO_MANY_COMMANDS -2
 #define ERR_CMD_OR_ARGS_TOO_BIG -3
-#define ERR_CMD_ARGS_BAD        -4      //for extra credit
-#define ERR_MEMORY              -5
-#define ERR_EXEC_CMD            -6
-#define OK_EXIT                 -7
+#define ERR_CMD_ARGS_BAD -4 // for extra credit
+#define ERR_MEMORY -5
+#define ERR_EXEC_CMD -6
+#define OK_EXIT -7
 
-//prototypes
+// prototypes
 int alloc_cmd_buff(cmd_buff_t *cmd_buff);
 int free_cmd_buff(cmd_buff_t *cmd_buff);
 int clear_cmd_buff(cmd_buff_t *cmd_buff);
 int build_cmd_buff(char *cmd_line, cmd_buff_t *cmd_buff);
+void print_dragon();
+void trim_spaces(char *str);
+void store_args(char *args, cmd_buff_t *cmd_buff);
 
-//built in command stuff
-typedef enum {
+// built in command stuff
+typedef enum
+{
     BI_CMD_EXIT,
     BI_CMD_DRAGON,
     BI_CMD_CD,
@@ -61,19 +66,16 @@ typedef enum {
     BI_EXECUTED,
     BI_RC,
 } Built_In_Cmds;
-Built_In_Cmds match_command(const char *input); 
+Built_In_Cmds match_command(const char *input);
 Built_In_Cmds exec_built_in_cmd(cmd_buff_t *cmd);
 
-//main execution context
+// main execution context
 int exec_local_cmd_loop();
 int exec_cmd(cmd_buff_t *cmd);
 
-
-
-
-//output constants
-#define CMD_OK_HEADER       "PARSED COMMAND LINE - TOTAL COMMANDS %d\n"
-#define CMD_WARN_NO_CMD     "warning: no commands provided\n"
-#define CMD_ERR_PIPE_LIMIT  "error: piping limited to %d commands\n"
+// output constants
+#define CMD_OK_HEADER "PARSED COMMAND LINE - TOTAL COMMANDS %d\n"
+#define CMD_WARN_NO_CMD "warning: no commands provided\n"
+#define CMD_ERR_PIPE_LIMIT "error: piping limited to %d commands\n"
 
 #endif
