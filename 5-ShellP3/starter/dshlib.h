@@ -40,11 +40,14 @@ typedef struct command_list
 
 // Special character #defines
 #define SPACE_CHAR ' '
+#define SPACE_STRING " "
 #define PIPE_CHAR '|'
 #define PIPE_STRING "|"
+#define QUOTE_CHAR '"'
 
 #define SH_PROMPT "dsh3> "
 #define EXIT_CMD "exit"
+#define DRAGON_CMD "dragon"
 #define EXIT_SC 99
 
 // Standard Return Codes
@@ -65,6 +68,10 @@ int build_cmd_buff(char *cmd_line, cmd_buff_t *cmd_buff);
 int close_cmd_buff(cmd_buff_t *cmd_buff);
 int build_cmd_list(char *cmd_line, command_list_t *clist);
 int free_cmd_list(command_list_t *cmd_lst);
+int tokenizer(char *cmd_line, char *commands[], char *delim);
+void print_dragon();
+void trim_spaces(char *str);
+void store_args(char *args, cmd_buff_t *cmd_buff);
 
 // built in command stuff
 typedef enum
@@ -81,7 +88,7 @@ Built_In_Cmds exec_built_in_cmd(cmd_buff_t *cmd);
 // main execution context
 int exec_local_cmd_loop();
 int exec_cmd(cmd_buff_t *cmd);
-int execute_pipeline(command_list_t *clist);
+void execute_pipeline(command_list_t *clist);
 
 // output constants
 #define CMD_OK_HEADER "PARSED COMMAND LINE - TOTAL COMMANDS %d\n"
